@@ -265,8 +265,9 @@ class _RoomListState extends State<RoomList> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) => BookingList(
-                                        roomId: room['id'],
-                                      ),
+  // แปลงค่าจาก String เป็น int ให้เรียบร้อยก่อนส่ง
+  roomId: int.tryParse(room['id'].toString()), 
+),
                                     ),
                                   );
                                 },
