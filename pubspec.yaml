@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.2.0         # เพิ่มการใช้งาน http package
+  
   image_picker: ^1.0.7  # เพิ่มการใช้งาน image_picker package
 
 dev_dependencies:
