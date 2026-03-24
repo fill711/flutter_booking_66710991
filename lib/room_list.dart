@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_booking_66710991/home_page.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'booking_page.dart';
 import 'booking_list.dart';
-import 'Login.dart';
+import 'home_page.dart';
 
 //////////////////////////////////////////////////////////////
 // API URL
@@ -91,7 +92,7 @@ class _RoomListState extends State<RoomList> {
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const LoginPage(),
+                  builder: (_) => const HomePage(),
                 ),
                 (route) => false,
               );
