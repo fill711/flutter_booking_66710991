@@ -5,22 +5,22 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 
-class AddProductPage extends StatefulWidget {
-  const AddProductPage({super.key});
+class InsertGamePage extends StatefulWidget {
+  const InsertGamePage({super.key});
 
   @override
-  State<AddProductPage> createState() => _AddProductPageState();
+  State<InsertGamePage> createState() => _AddGamePageState();
 }
 
-class _AddProductPageState extends State<AddProductPage> {
+class _AddGamePageState extends State<InsertGamePage> {
 
   ////////////////////////////////////////////////////////////
   // ✅ Controllers
   ////////////////////////////////////////////////////////////
 
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController priceController = TextEditingController();
-  final TextEditingController descController = TextEditingController();
+  final TextEditingController infoController = TextEditingController();
+  final TextEditingController capcacityController = TextEditingController();
 
   ////////////////////////////////////////////////////////////
   // ✅ Image (ใช้ XFile รองรับ Web)
@@ -56,7 +56,7 @@ class _AddProductPageState extends State<AddProductPage> {
     }
 
     final url = Uri.parse(
-      "http://localhost/flutter_booking_66710991/php_api/insert_room.php",
+      "http://localhost/flutter_booking_66710991/php_api/insert_game.php",
     );
 
     var request = http.MultipartRequest('POST', url);
@@ -65,9 +65,9 @@ class _AddProductPageState extends State<AddProductPage> {
     // ✅ Fields
     ////////////////////////////////////////////////////////////
 
-    request.fields['room_name'] = nameController.text;
-    request.fields['capacity'] = priceController.text;
-    request.fields['location'] = descController.text;
+    request.fields['NAME'] = nameController.text;
+    request.fields['INFO'] = infoController.text;
+    request.fields['CAPACITY'] = capcacityController.text;
 
     ////////////////////////////////////////////////////////////
     // ✅ Upload Image (แยก Web / Mobile)
@@ -107,7 +107,7 @@ class _AddProductPageState extends State<AddProductPage> {
     if (data["success"] == true) {
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("เพิ่มห้องเรียบร้อย")),
+        const SnackBar(content: Text("เพิ่มบอร์ดเกมเรียบร้อย")),
       );
 
       Navigator.pop(context, true);
@@ -127,7 +127,7 @@ class _AddProductPageState extends State<AddProductPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("เพิ่มห้องประชุม")),
+      appBar: AppBar(title: const Text("เพิ่มบอร์ดเกม")),
 
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -173,7 +173,7 @@ class _AddProductPageState extends State<AddProductPage> {
               TextField(
                 controller: nameController,
                 decoration: const InputDecoration(
-                  labelText: "ชื่อห้อง",
+                  labelText: "ชื่อบอร์ดเกม",
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -185,10 +185,10 @@ class _AddProductPageState extends State<AddProductPage> {
               ////////////////////////////////////////////////////////////
 
               TextField(
-                controller: descController,
+                controller: infoController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
-                  labelText: "สถานที",
+                  labelText: "คำอธิบาย",
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -200,10 +200,10 @@ class _AddProductPageState extends State<AddProductPage> {
               ////////////////////////////////////////////////////////////
 
               TextField(
-                controller: priceController,
+                controller: capcacityController,
                 maxLines: 3,
                 decoration: const InputDecoration(
-                  labelText: "ความจุ",
+                  labelText: "จำนวนผู้เล่น",
                   border: OutlineInputBorder(),
                 ),
               ),

@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_booking_66710991/room_crud.dart';
-
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'room_crud.dart';
 
-class LoginAdminPage extends StatefulWidget {
-  const LoginAdminPage({super.key});
+class LoginAdmin extends StatefulWidget {
+  const LoginAdmin({super.key});
 
   @override
-  State<LoginAdminPage> createState() => _LoginPageState();
+  State<LoginAdmin> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginAdminPage> {
+class _LoginPageState extends State<LoginAdmin> {
   TextEditingController username = TextEditingController();
   TextEditingController password = TextEditingController();
 
@@ -31,7 +29,9 @@ class _LoginPageState extends State<LoginAdminPage> {
     if (data["status"] == "success") {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => RoomPage( name: data["name"])), //เพิ่มการส่งค่า name  ไปยัง RoomList
+        MaterialPageRoute(
+          builder: (context) => RoomPage(name: data["name"]),
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -46,60 +46,144 @@ class _LoginPageState extends State<LoginAdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Login Admin")),
+      backgroundColor: const Color(0xFFFFF5F7),
 
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-
+      body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-
           children: [
-            const Icon(Icons.account_circle, size: 100),
 
-            const SizedBox(height: 30),
-
-            TextField(
-              controller: username,
-              decoration: const InputDecoration(
-                labelText: "Username",
-                border: OutlineInputBorder(),
+            /// 🔥 Header (ดูแพง)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(20, 60, 20, 40),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFFFF6F91),
+                    Color(0xFFFFA6C1),
+                  ],
+                ),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(40),
+                  bottomRight: Radius.circular(40),
+                ),
+              ),
+              child: const Column(
+                children: [
+                  Icon(Icons.admin_panel_settings,
+                      size: 80, color: Colors.white),
+                  SizedBox(height: 10),
+                  Text(
+                    "Admin Login",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    "เข้าสู่ระบบผู้ดูแล",
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                ],
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 40),
 
-            TextField(
-              controller: password,
-              obscureText: isPasswordHidden,
-              decoration: InputDecoration(
-                labelText: "Password",
-                border: const OutlineInputBorder(),
-
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    isPasswordHidden ? Icons.visibility : Icons.visibility_off,
+            /// 🔐 Form (Card)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Material(
+                elevation: 8,
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      isPasswordHidden = !isPasswordHidden;
-                    });
-                  },
+                  child: Column(
+                    children: [
+
+                      /// Username
+                      TextField(
+                        controller: username,
+                        decoration: InputDecoration(
+                          labelText: "Username",
+                          prefixIcon: const Icon(Icons.person),
+                          filled: true,
+                          fillColor: const Color(0xFFFFEEF2),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      /// Password
+                      TextField(
+                        controller: password,
+                        obscureText: isPasswordHidden,
+                        decoration: InputDecoration(
+                          labelText: "Password",
+                          prefixIcon: const Icon(Icons.lock),
+                          filled: true,
+                          fillColor: const Color(0xFFFFEEF2),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              isPasswordHidden
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                isPasswordHidden = !isPasswordHidden;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 30),
+
+                      /// 🔘 ปุ่ม Login
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: login,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFFF6F91),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 5,
+                          ),
+                          child: const Text(
+                            "LOGIN",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
 
             const SizedBox(height: 30),
-
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-
-              child: ElevatedButton(
-                onPressed: login,
-                child: const Text("LOGIN", style: TextStyle(fontSize: 18)),
-              ),
-            ),
           ],
         ),
       ),

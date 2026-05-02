@@ -4,17 +4,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'booking_page.dart';
 import 'booking_list.dart';
-import 'home_page.dart';
-
-//////////////////////////////////////////////////////////////
-// API URL
-//////////////////////////////////////////////////////////////
 
 const String baseUrl = "http://localhost/flutter_booking_66710991/php_api/";
-
-//////////////////////////////////////////////////////////////
-// ROOM LIST PAGE
-//////////////////////////////////////////////////////////////
 
 class RoomList extends StatefulWidget {
   final String name;
@@ -31,19 +22,11 @@ class _RoomListState extends State<RoomList> {
 
   TextEditingController searchController = TextEditingController();
 
-  ////////////////////////////////////////////////////////////
-  // INIT
-  ////////////////////////////////////////////////////////////
-
   @override
   void initState() {
     super.initState();
     fetchRooms();
   }
-
-  ////////////////////////////////////////////////////////////
-  // FETCH ROOMS
-  ////////////////////////////////////////////////////////////
 
   Future<void> fetchRooms() async {
     final response =
@@ -57,10 +40,6 @@ class _RoomListState extends State<RoomList> {
     }
   }
 
-  ////////////////////////////////////////////////////////////
-  // SEARCH ROOM
-  ////////////////////////////////////////////////////////////
-
   void searchRoom(String keyword) {
     final results = rooms.where((room) {
       final name = room['room_name'].toString().toLowerCase();
@@ -72,14 +51,13 @@ class _RoomListState extends State<RoomList> {
     });
   }
 
-  ////////////////////////////////////////////////////////////
-  // LOGOUT FUNCTION
-  ////////////////////////////////////////////////////////////
-
   void logout() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
         title: const Text("ยืนยัน"),
         content: const Text("ต้องการออกจากระบบหรือไม่?"),
         actions: [
@@ -97,33 +75,26 @@ class _RoomListState extends State<RoomList> {
                 (route) => false,
               );
             },
-            child: const Text("ออกจากระบบ"),
+            child: const Text("ออกจากระบบ",
+                style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
   }
 
-  ////////////////////////////////////////////////////////////
-  // UI
-  ////////////////////////////////////////////////////////////
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      ////////////////////////////////////////////////////////
-      // APPBAR
-      ////////////////////////////////////////////////////////
+      backgroundColor: const Color(0xFFFFF5F7),
 
       appBar: AppBar(
-        title: Text("Meeting Room (${widget.name})"),
+        title: const Text("ROOM BOOKING"),
+        centerTitle: true,
+        backgroundColor: const Color(0xFFFF6F91),
         actions: [
-          //////////////////////////////////////////////////////
-          // ดูรายการจอง
-          //////////////////////////////////////////////////////
           IconButton(
             icon: const Icon(Icons.list_alt),
-            tooltip: "ดูการจองทั้งหมด",
             onPressed: () {
               Navigator.push(
                 context,
@@ -133,47 +104,70 @@ class _RoomListState extends State<RoomList> {
               );
             },
           ),
-
-          //////////////////////////////////////////////////////
-          // LOGOUT
-          //////////////////////////////////////////////////////
           IconButton(
             icon: const Icon(Icons.logout),
-            tooltip: "ออกจากระบบ",
             onPressed: logout,
           ),
         ],
       ),
 
-      ////////////////////////////////////////////////////////
-      // BODY
-      ////////////////////////////////////////////////////////
-
       body: Column(
         children: [
-          //////////////////////////////////////////////////////
-          // SEARCH BOX
-          //////////////////////////////////////////////////////
+
+          /// 🔥 HEADER
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFFFF6F91),
+                  Color(0xFFFFA6C1),
+                ],
+              ),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(25),
+                bottomRight: Radius.circular(25),
+              ),
+            ),
+            child: Text(
+              "สวัสดี ${widget.name} 👋",
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          /// 🔍 SEARCH
           Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: TextField(
               controller: searchController,
-              decoration: const InputDecoration(
-                hintText: "ค้นหาห้องประชุม...",
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: "ค้นหาห้อง...",
+                prefixIcon: const Icon(Icons.search),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
               ),
               onChanged: searchRoom,
             ),
           ),
 
-          //////////////////////////////////////////////////////
-          // ROOM LIST
-          //////////////////////////////////////////////////////
+          const SizedBox(height: 10),
+
+          /// 📦 ROOM LIST
           Expanded(
             child: filteredRooms.isEmpty
                 ? const Center(child: Text("ไม่พบข้อมูลห้อง"))
                 : ListView.builder(
+                    padding: const EdgeInsets.all(10),
                     itemCount: filteredRooms.length,
                     itemBuilder: (context, index) {
                       final room = filteredRooms[index];
@@ -181,99 +175,145 @@ class _RoomListState extends State<RoomList> {
                       String imageUrl =
                           "${baseUrl}images/${room['image'] ?? ''}";
 
-                      return Card(
-                        margin: const EdgeInsets.all(10),
-                        elevation: 3,
-                        child: ListTile(
-                          isThreeLine: true,
-
-                          ////////////////////////////////////////////////////
-                          // IMAGE
-                          ////////////////////////////////////////////////////
-                          leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              imageUrl,
-                              width: 70,
-                              height: 70,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) =>
-                                  const Icon(Icons.meeting_room),
-                            ),
-                          ),
-
-                          ////////////////////////////////////////////////////
-                          // TITLE
-                          ////////////////////////////////////////////////////
-                          title: Text(
-                            room['room_name'] ?? "",
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold),
-                          ),
-
-                          ////////////////////////////////////////////////////
-                          // SUBTITLE
-                          ////////////////////////////////////////////////////
-                          subtitle: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  "Capacity: ${room['capacity']} คน"),
-                              Text(
-                                  "Location: ${room['location']}"),
-                            ],
-                          ),
-
-                          ////////////////////////////////////////////////////
-                          // ACTION BUTTON
-                          ////////////////////////////////////////////////////
-                          trailing: Wrap(
-                            direction: Axis.vertical,
-                            spacing: 2,
-                            children: [
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
-                                  minimumSize: const Size(70, 28),
-                                  padding:
-                                      const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 2),
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 15),
+                        child: Material(
+                          elevation: 6,
+                          borderRadius: BorderRadius.circular(20),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(20),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => BookingPage(
+                                    room: room,
+                                    name: widget.name,
+                                  ),
                                 ),
-                                child: const Text("จอง"),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          BookingPage(
-                                            room: room,
-                                            name: widget.name
-                                            ),
-                        
-                                    ),
-                                  );
-                                },
-                              ),
+                              );
+                            },
+                            child: Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
 
-                              IconButton(
-                                icon: const Icon(Icons.event_note,
-                                    color: Colors.orange),
-                                tooltip: "ดูข้อมูลการจอง",
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => BookingList(
-  // แปลงค่าจาก String เป็น int ให้เรียบร้อยก่อนส่ง
-  roomId: int.tryParse(room['id'].toString()), 
-),
+                                /// 🖼 IMAGE + OVERLAY
+                                Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius:
+                                          const BorderRadius.vertical(
+                                              top: Radius.circular(20)),
+                                      child: Image.network(
+                                        imageUrl,
+                                        height: 160,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) =>
+                                            const Icon(Icons.image),
+                                      ),
                                     ),
-                                  );
-                                },
-                              ),
-                            ],
+
+                                    Container(
+                                      height: 160,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            const BorderRadius.vertical(
+                                                top:
+                                                    Radius.circular(20)),
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Colors.black
+                                                .withOpacity(0.3),
+                                            Colors.transparent,
+                                          ],
+                                          begin: Alignment.bottomCenter,
+                                          end: Alignment.topCenter,
+                                        ),
+                                      ),
+                                    ),
+
+                                    Positioned(
+                                      bottom: 10,
+                                      left: 10,
+                                      child: Text(
+                                        room['room_name'] ?? '',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                          fontWeight:
+                                              FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                /// 📝 INFO
+                                Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
+                                          children: [
+                                            Text(
+                                              "📍 ${room['location']}",
+                                              style: const TextStyle(
+                                                  color:
+                                                      Colors.black54),
+                                            ),
+                                            const SizedBox(height: 5),
+                                            Text(
+                                              "👥 ${room['capacity']} คน",
+                                              style: const TextStyle(
+                                                color:
+                                                    Color(0xFFFF6F91),
+                                                fontWeight:
+                                                    FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      /// 🔘 BUTTON
+                                      ElevatedButton(
+                                        style: ElevatedButton
+                                            .styleFrom(
+                                          backgroundColor:
+                                              const Color(
+                                                  0xFFFF6F91),
+                                          shape:
+                                              RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius
+                                                    .circular(10),
+                                          ),
+                                        ),
+                                        child: const Text("จอง"),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  BookingPage(
+                                                room: room,
+                                                name: widget.name,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );

@@ -3,55 +3,66 @@ import 'package:flutter_booking_66710991/Login.dart';
 import 'package:flutter_booking_66710991/booking_list.dart';
 import 'login_admin.dart';
 
-// import หน้าอื่น
-import 'booking_list.dart';
-
-// สร้างหน้า HomePage (หน้าแรก)
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 🔹 AppBar = แถบด้านบนของแอป
-      backgroundColor: const Color.fromARGB(255, 231, 238, 173), // ✅ ใส่ตรงนี้
+      backgroundColor: const Color(0xFFFFF5F7),
+
+      // 🔹 AppBar (โปร่ง + ลอย)
       appBar: AppBar(
-        title: const Text('หน้าแรก'),
-        backgroundColor: const Color.fromARGB(255, 174, 175, 99),
-        foregroundColor: Colors.white, // ✅ สีไอคอน + ข้อความ
+        title: const Text('MEOW BOOKING'),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: const Color(0xFFFF6F91),
       ),
 
-      // 🔹 Drawer = เมนูด้านข้าง (เลื่อนจากซ้าย)
+      // 🔹 Drawer
       drawer: Drawer(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.horizontal(right: Radius.circular(25)),
+        ),
         child: ListView(
-          padding: EdgeInsets.zero, // เอาช่องว่างด้านบนออก
+          padding: EdgeInsets.zero,
           children: [
-            // 🔸 Header ของ Drawer (ส่วนหัว)
-            const UserAccountsDrawerHeader(
-              accountName: Text('Fill'), // ชื่อผู้ใช้
-              accountEmail: Text('Fill@example.com'), // อีเมล
-              currentAccountPicture: CircleAvatar(
-                child: Icon(Icons.person), // ไอคอนโปรไฟล์
+            Container(
+              height: 180,
+              padding: const EdgeInsets.all(16),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFFF6F91), Color(0xFFFFA6C1)],
+                ),
+                borderRadius: BorderRadius.only(
+                  bottomRight: Radius.circular(25),
+                ),
+              ),
+              child: const Align(
+                alignment: Alignment.bottomLeft,
+                child: Text(
+                  'Welcome 👋',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
 
-            // 🔸 เมนู: หน้าแรก
             ListTile(
-              leading: const Icon(Icons.home), // ไอคอน
-              title: const Text('หน้าแรก'), // ข้อความเมนู
-              onTap: () {
-                Navigator.pop(context); // ปิด Drawer
-              },
+              leading: const Icon(Icons.home, color: Color(0xFFFF6F91)),
+              title: const Text('หน้าแรก'),
+              onTap: () => Navigator.pop(context),
             ),
 
-            // 🔸 เมนู: ไปหน้า Page 1
             ListTile(
-              leading: const Icon(Icons.pageview),
+              leading: const Icon(Icons.calendar_month, color: Color(0xFFFF6F91)),
               title: const Text('ข้อมูลการจอง'),
               onTap: () {
-                Navigator.pop(context); // ปิด Drawer ก่อน
-
-                // 🔹 เปิดหน้าใหม่ (Page1)
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const BookingList()),
@@ -59,79 +70,202 @@ class HomePage extends StatelessWidget {
               },
             ),
 
-            // 🔸 เมนู: ไปหน้า Page 2
             ListTile(
-              leading: const Icon(Icons.dvr),
+              leading: const Icon(Icons.admin_panel_settings, color: Color(0xFFFF6F91)),
               title: const Text('Admin'),
               onTap: () {
-                Navigator.pop(context); // ปิด Drawer ก่อน
-
-                // 🔹 เปิดหน้าใหม่ (Page2)
+                Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const LoginAdminPage()),
+                  MaterialPageRoute(builder: (_) => const LoginAdmin()),
                 );
               },
             ),
-    
-
-          
           ],
         ),
       ),
 
-      // 🔹 Body = ส่วนเนื้อหาหลักของหน้า
+      // 🔹 Body
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 80),
-            //////////////////////////////////////////////////
-            // 🖼 รูปจาก assets
-            //////////////////////////////////////////////////
-            Center(
-              child: Image.asset(
-                'assets/images/Capture.jpg',
-                width: 400,
-                height: 200,
-                fit: BoxFit.cover,
+            const SizedBox(height: 10),
+
+            // 🔥 Hero Section (ภาพ + overlay)
+            Stack(
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  height: 220,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    image: const DecorationImage(
+                      image: AssetImage('assets/images/RoomA.png'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  height: 220,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.black.withOpacity(0.3),
+                        Colors.transparent,
+                      ],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    ),
+                  ),
+                ),
+
+                const Positioned(
+                  bottom: 20,
+                  left: 30,
+                  child: Text(
+                    'Room Booking',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 25),
+
+            // 🧾 ข้อความ
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'จองห้องสันทนาการ & บอร์ดเกม\nง่าย รวดเร็ว ทันสมัย',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  height: 1.4,
+                ),
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
 
-            //////////////////////////////////////////////////
-            // 📝 ข้อความ
-            //////////////////////////////////////////////////
-            const Text(
-              'ยินดีต้อนรับเข้าสู่ระบบ',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            // 🎴 Menu Cards
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  _menuCard(
+                    icon: Icons.meeting_room,
+                    title: 'จองห้อง',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const BookingList()),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 12),
+                  _menuCard(
+                    icon: Icons.gamepad,
+                    title: 'บอร์ดเกม',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginAdmin()),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
-            //////////////////////////////////////////////////
-            // 🔘 ปุ่ม Login
-            //////////////////////////////////////////////////
+            // 🔘 ปุ่ม Login (Gradient)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: SizedBox(
-                // width: double.infinity,
-                // height: 50,
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.login),
-                  label: const Text('เข้าสู่ระบบ'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const LoginPage()),
-                    );
-                  },
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
+                  );
+                },
+                child: Container(
+                  height: 55,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFFF6F91), Color(0xFFFFA6C1)],
+                    ),
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.pink.withOpacity(0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'เข้าสู่ระบบ',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
 
             const SizedBox(height: 30),
           ],
+        ),
+      ),
+    );
+  }
+
+  // 🔹 Widget Card เมนู
+  Widget _menuCard({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          height: 110,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.pink.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              )
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 35, color: const Color(0xFFFF6F91)),
+              const SizedBox(height: 10),
+              Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
         ),
       ),
     );

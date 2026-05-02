@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'room_list.dart';
+import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,19 +19,25 @@ class _LoginPageState extends State<LoginPage> {
   bool isPasswordHidden = true;
 
   Future login() async {
-    var url = Uri.parse("http://localhost/flutter_booking_66710991/php_api/login.php");
+    var url = Uri.parse(
+      "http://localhost/flutter_booking_66710991/php_api/login.php",
+    );
 
     var response = await http.post(
       url,
       body: {"username": username.text, "password": password.text},
     );
 
+    print(response.body);
+
     var data = json.decode(response.body);
 
     if (data["status"] == "success") {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => RoomList( name: data["name"])), //เพิ่มการส่งค่า name  ไปยัง RoomList
+        MaterialPageRoute(
+          builder: (context) => RoomList(name: data["name"]),
+        ), //เพิ่มการส่งค่า name  ไปยัง RoomList
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -89,15 +96,25 @@ class _LoginPageState extends State<LoginPage> {
             ),
 
             const SizedBox(height: 30),
-
             SizedBox(
               width: double.infinity,
               height: 50,
-
               child: ElevatedButton(
                 onPressed: login,
                 child: const Text("LOGIN", style: TextStyle(fontSize: 18)),
               ),
+            ),
+
+            const SizedBox(height: 15),
+
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RegisterPage()),
+                );
+              },
+              child: const Text("ยังไม่มีบัญชี? สมัครสมาชิก"),
             ),
           ],
         ),

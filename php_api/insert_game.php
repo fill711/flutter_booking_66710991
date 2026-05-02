@@ -3,9 +3,9 @@ include 'condb.php';
 
 header('Content-Type: application/json');
 
-$room_name = $_POST['room_name'];
-$capacity = $_POST['capacity'];
-$location = $_POST['location'];
+$NAME = $_POST['NAME'];
+$INFO = $_POST['INFO'];
+$CAPACITY = $_POST['CAPACITY'];
 
 ////////////////////////////////////////////////////////////
 // ✅ รับรูปภาพ
@@ -35,13 +35,13 @@ if (isset($_FILES['image'])) {
 try {
 
     $stmt = $conn->prepare("
-        INSERT INTO rooms (room_name, capacity, location, image)
-        VALUES (:room_name, :capacity, :location, :image)
+        INSERT INTO game (NAME, INFO, CAPACITY, image)
+        VALUES (:CAPACITY, :INFO, :CAPACITY, :image)
     ");
 
-    $stmt->bindParam(":room_name", $room_name);
-    $stmt->bindParam(":capacity", $capacity);
-    $stmt->bindParam(":location", $location);
+    $stmt->bindParam(":NAME", $NAME);
+    $stmt->bindParam(":INFO", $INFO);
+    $stmt->bindParam(":CAPACITY", $CAPACITY);
     $stmt->bindParam(":image", $imageName);
 
     if ($stmt->execute()) {
