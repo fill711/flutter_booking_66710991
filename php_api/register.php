@@ -1,25 +1,55 @@
 <?php
+header("Content-Type: application/json");
 include "condb.php";
 
-$first_name = $_POST['first_name'];
-$last_name = $_POST['last_name'];
-$phone = $_POST['phone'];
-$username = $_POST['username'];
-$password = $_POST['password'];
+// รับค่า
+$username = $_POST['username'] ?? '';
+$password = $_POST['password'] ?? '';
+$first_name = $_POST['first_name'] ?? '';
+$last_name = $_POST['last_name'] ?? '';
 
-// เช็ค username ซ้ำ
-$check = mysqli_query($conn, "SELECT * FROM employees WHERE username='$username'");
+// เช็คค่าว่าง
+if(empty($username) || empty($password) || empty($first_name) || empty($last_name)){
+    echo json_encode([
+        "status" => "error",
+        "message" => "Please fill all fields"
+    ]);
+    exit;
+}
 
-if(mysqli_num_rows($check) > 0){
-    echo json_encode(["success" => false, "message" => "Username already exists"]);
-} else {
-    $sql = "INSERT INTO employees (first_name, last_name, phone, username, password)
-            VALUES ('$first_name','$last_name','$phone','$username','$password')";
+// ✅ เช็ค username ซ้ำ
+$check = $conn->prepare("SELECT * FROM employees WHERE username = :username");
+$check->bindParam(':username', $username);
+$check->execute();
 
-    if(mysqli_query($conn, $sql)){
-        echo json_encode(["success" => true]);
-    } else {
-        echo json_encode(["success" => false]);
-    }
+if($check->rowCount() > 0){
+    echo json_encode([
+        "status" => "error",
+        "message" => "Username already exists"
+    ]);
+    exit;
+}
+
+// ✅ เพิ่มข้อมูล
+$sql = "INSERT INTO employees (username, password, first_name, last_name)
+        VALUES (:username, :password, :first_name, :last_name)";
+
+$stmt = $conn->prepare($sql);
+
+$stmt->bindParam(':username', $username);
+$stmt->bindParam(':password', $password);
+$stmt->bindParam(':first_name', $first_name);
+$stmt->bindParam(':last_name', $last_name);
+
+if($stmt->execute()){
+    echo json_encode([
+        "status" => "success",
+        "message" => "Register success"
+    ]);
+}else{
+    echo json_encode([
+        "status" => "error",
+        "message" => "Register failed"
+    ]);
 }
 ?>

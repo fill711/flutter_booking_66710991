@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'dart:io';
 
 const String baseUrl =
-    "http://127.0.0.1/flutter_booking_66710991/php_api/";
+    "http://localhost/flutter_booking_66710991/php_api/";
 
 class EditGAMEPage extends StatefulWidget {
   final dynamic product;
@@ -198,7 +198,7 @@ class _EditGAMEPageState extends State<EditGAMEPage> {
 
               TextField(
                 controller: capacityController,
-                decoration: const InputDecoration(labelText: "จำนวนคน"),
+                decoration: const InputDecoration(labelText: "จำนวนคนเล่น"),
               ),
 
               const SizedBox(height: 20),

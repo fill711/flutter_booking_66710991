@@ -9,7 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.2.0         # เพิ่มการใช้งาน http package
+  http: ^1.2.0
+  intl: ^0.18.1         # เพิ่มการใช้งาน http package
   
   image_picker: ^1.0.7  # เพิ่มการใช้งาน image_picker package
 

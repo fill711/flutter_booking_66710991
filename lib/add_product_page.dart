@@ -127,7 +127,7 @@ class _AddProductPageState extends State<AddProductPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("เพิ่มห้องประชุม")),
+      appBar: AppBar(title: const Text("เพิ่มห้องสันทนาการ")),
 
       body: Padding(
         padding: const EdgeInsets.all(16.0),

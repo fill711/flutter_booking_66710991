@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_booking_66710991/Login.dart';
 import 'package:flutter_booking_66710991/booking_list.dart';
+import 'package:flutter_booking_66710991/game_booking_list.dart';
 import 'login_admin.dart';
 
 class HomePage extends StatelessWidget {
@@ -136,14 +137,24 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             ),
-
+IconButton(
+  icon: const Icon(Icons.gamepad_sharp),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const GameBookingList(),
+      ),
+    );
+  },
+),
             const SizedBox(height: 25),
 
             // 🧾 ข้อความ
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Text(
-                'จองห้องสันทนาการ & บอร์ดเกม\nง่าย รวดเร็ว ทันสมัย',
+                'จองห้องสันทนาการ & บอร์ดเกม\n',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
@@ -162,7 +173,7 @@ class HomePage extends StatelessWidget {
                 children: [
                   _menuCard(
                     icon: Icons.meeting_room,
-                    title: 'จองห้อง',
+                    title: 'ดูคิว การจองห้อง',
                     onTap: () {
                       Navigator.push(
                         context,
@@ -173,7 +184,7 @@ class HomePage extends StatelessWidget {
                   const SizedBox(width: 12),
                   _menuCard(
                     icon: Icons.gamepad,
-                    title: 'บอร์ดเกม',
+                    title: 'เข้าสู่ระบบ Admin',
                     onTap: () {
                       Navigator.push(
                         context,
@@ -214,7 +225,7 @@ class HomePage extends StatelessWidget {
                   ),
                   child: const Center(
                     child: Text(
-                      'เข้าสู่ระบบ',
+                      'เข้าสู่ระบบ User',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,

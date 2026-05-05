@@ -1,72 +1,66 @@
 <?php
-
 header("Content-Type: application/json");
-include "condb.php";
+include 'condb.php';
 
-$room_id = $_POST['room_id'];
-$user_name = $_POST['user_name'];
-$booking_date = $_POST['booking_date'];
-$start_time = $_POST['start_time'];
-$end_time = $_POST['end_time'];
+// รองรับทั้ง POST และ JSON
+$data = $_POST;
+if (empty($data)) {
+    $data = json_decode(file_get_contents("php://input"), true);
+}
 
-////////////////////////////////////////////////////
-// CHECK TIME CONFLICT
-////////////////////////////////////////////////////
+$room_id = $data['room_id'] ?? null;
+$username = $data['user_name'] ?? null;
+$booking_date = $data['booking_date'] ?? null;
+$start_time = $data['start_time'] ?? null;
+$end_time = $data['end_time'] ?? null;
 
-$sql_check = "SELECT * FROM bookings
-WHERE room_id = :room_id
-AND booking_date = :booking_date
-AND start_time < :end_time
-AND end_time > :start_time";
-
-$stmt = $conn->prepare($sql_check);
-
-$stmt->bindParam(":room_id",$room_id);
-$stmt->bindParam(":booking_date",$booking_date);
-$stmt->bindParam(":start_time",$start_time);
-$stmt->bindParam(":end_time",$end_time);
-
-$stmt->execute();
-
-if($stmt->rowCount() > 0){
-
-    echo json_encode([
-        "status"=>"unavailable",
-        "message"=>"ห้องไม่ว่าง เวลาซ้อนกัน"
-    ]);
-
+// ✅ ตรวจข้อมูล
+if (!$room_id || !$username || !$booking_date || !$start_time || !$end_time) {
+    echo json_encode(["status"=>"error","message"=>"ข้อมูลไม่ครบ"]);
     exit;
 }
 
-////////////////////////////////////////////////////
-// INSERT BOOKING
-////////////////////////////////////////////////////
+// ✅ CHECK 2 ชั่วโมง
+$start = strtotime($start_time);
+$end = strtotime($end_time);
 
-$sql = "INSERT INTO bookings
-(room_id,user_name,booking_date,start_time,end_time)
-VALUES
-(:room_id,:user_name,:booking_date,:start_time,:end_time)";
+$diff = ($end - $start) / 3600;
 
-$stmt = $conn->prepare($sql);
-
-$stmt->bindParam(":room_id",$room_id);
-$stmt->bindParam(":user_name",$user_name);
-$stmt->bindParam(":booking_date",$booking_date);
-$stmt->bindParam(":start_time",$start_time);
-$stmt->bindParam(":end_time",$end_time);
-
-if($stmt->execute()){
-
-    echo json_encode([
-        "status"=>"success"
-    ]);
-
-}else{
-
-    echo json_encode([
-        "status"=>"error"
-    ]);
-
+if ($diff > 2) {
+    echo json_encode(["status"=>"error","message"=>"จองได้ไม่เกิน 2 ชั่วโมง"]);
+    exit;
 }
 
-?>
+// ✅ CHECK เวลาในวันเดียวกัน
+$sql = "SELECT * FROM bookings 
+        WHERE room_id = ?
+        AND booking_date = ?
+        AND NOT (end_time <= ? OR start_time >= ?)";
+
+$stmt = $conn->prepare($sql);
+$stmt->execute([$room_id, $booking_date, $start_time, $end_time]);
+
+if ($stmt->rowCount() > 0) {
+    echo json_encode(["status"=>"error","message"=>"ช่วงเวลานี้มีคนจองแล้ว"]);
+    exit;
+}
+
+// ✅ INSERT
+$sql = "INSERT INTO bookings 
+        (room_id, user_name, booking_date, start_time, end_time)
+        VALUES (?, ?, ?, ?, ?)";
+
+$stmt = $conn->prepare($sql);
+$success = $stmt->execute([
+    $room_id,
+    $username,
+    $booking_date,
+    $start_time,
+    $end_time
+]);
+
+if ($success) {
+    echo json_encode(["status"=>"success","message"=>"จองสำเร็จ"]);
+} else {
+    echo json_encode(["status"=>"error","message"=>"จองไม่สำเร็จ"]);
+}

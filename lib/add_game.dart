@@ -218,7 +218,7 @@ class _AddGamePageState extends State<InsertGamePage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: saveProduct,
-                  child: const Text("บันทึกห้อง"),
+                  child: const Text("บันทึกบอร์ดเกม"),
                 ),
               ),
             ],

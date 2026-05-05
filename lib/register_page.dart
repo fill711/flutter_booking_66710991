@@ -2,112 +2,163 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-// 🔥 สำคัญมาก (แก้ localhost)
 const String baseUrl = "http://localhost/flutter_booking_66710991/php_api/";
-// ถ้าใช้มือถือจริง → เปลี่ยนเป็น IP เครื่องคุณ
 
 class RegisterPage extends StatefulWidget {
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController firstName = TextEditingController();
-  final TextEditingController lastName = TextEditingController();
-  final TextEditingController phone = TextEditingController();
-  final TextEditingController username = TextEditingController();
-  final TextEditingController password = TextEditingController();
+class _RegisterPageState extends State<RegisterPage> { 
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
 
   bool isLoading = false;
 
   Future<void> register() async {
-    // 🔥 กันกดรัว
-    if (isLoading) return;
+    setState(() => isLoading = true);
 
-    setState(() {
-      isLoading = true;
-    });
+    var response = await http.post(
+      Uri.parse(baseUrl + "register.php"),
+      body: {
+        "username": usernameController.text,
+        "password": passwordController.text,
+        "first_name": firstNameController.text,
+        "last_name": lastNameController.text,
+      },
+    );
 
-    try {
-      var url = Uri.parse("${baseUrl}register.php");
+    var data = json.decode(response.body);
 
-      var response = await http.post(url, body: {
-        "first_name": firstName.text,
-        "last_name": lastName.text,
-        "phone": phone.text,
-        "username": username.text,
-        "password": password.text,
-      });
+    setState(() => isLoading = false);
 
-      print("STATUS: ${response.statusCode}");
-      print("BODY: ${response.body}");
-
-      var data = json.decode(response.body);
-
-      if (data["success"] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Register Success")),
-        );
-
-        Navigator.pop(context); // 🔥 กลับไปหน้า login
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data["message"] ?? "Register Failed")),
-        );
-      }
-    } catch (e) {
-      print("ERROR: $e");
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Connection Error")),
+    if (data["status"] == "success") {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text("Success"),
+          content: Text("Register completed!"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: Text("OK"),
+            )
+          ],
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text("Error"),
+          content: Text(data["message"] ?? "Register failed"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("OK"),
+            )
+          ],
+        ),
       );
     }
+  }
 
-    setState(() {
-      isLoading = false;
-    });
+  InputDecoration pinkInput(String label) {
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: Colors.pink.shade50,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: BorderSide.none,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Register")),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            children: [
-              TextField(
-                controller: firstName,
-                decoration: InputDecoration(labelText: "First Name"),
-              ),
-              TextField(
-                controller: lastName,
-                decoration: InputDecoration(labelText: "Last Name"),
-              ),
-              TextField(
-                controller: phone,
-                decoration: InputDecoration(labelText: "Phone"),
-              ),
-              TextField(
-                controller: username,
-                decoration: InputDecoration(labelText: "Username"),
-              ),
-              TextField(
-                controller: password,
-                decoration: InputDecoration(labelText: "Password"),
-                obscureText: true,
-              ),
-
-              SizedBox(height: 20),
-
-              isLoading
-                  ? CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: register,
-                      child: Text("Register"),
+      backgroundColor: Colors.pink.shade100,
+      appBar: AppBar(
+        title: Text("Register"),
+        backgroundColor: Colors.pink,
+        elevation: 0,
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(20),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 8,
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Create Account",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.pink,
                     ),
-            ],
+                  ),
+                  SizedBox(height: 20),
+
+                  TextField(
+                    controller: firstNameController,
+                    decoration: pinkInput("First Name"),
+                  ),
+                  SizedBox(height: 15),
+
+                  TextField(
+                    controller: lastNameController,
+                    decoration: pinkInput("Last Name"),
+                  ),
+                  SizedBox(height: 15),
+
+                  TextField(
+                    controller: usernameController,
+                    decoration: pinkInput("Username"),
+                  ),
+                  SizedBox(height: 15),
+
+                  TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: pinkInput("Password"),
+                  ),
+                  SizedBox(height: 25),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.pink,
+                        padding: EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      onPressed: isLoading ? null : register,
+                      child: isLoading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                              "Register",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

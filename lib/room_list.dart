@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'booking_page.dart';
 import 'booking_list.dart';
-
+import 'game_list.dart';
 const String baseUrl = "http://localhost/flutter_booking_66710991/php_api/";
 
 class RoomList extends StatefulWidget {
@@ -93,6 +93,17 @@ class _RoomListState extends State<RoomList> {
         centerTitle: true,
         backgroundColor: const Color(0xFFFF6F91),
         actions: [
+          IconButton(
+  icon: const Icon(Icons.games),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => GameList(name: widget.name),
+      ),
+    );
+  },
+),
           IconButton(
             icon: const Icon(Icons.list_alt),
             onPressed: () {

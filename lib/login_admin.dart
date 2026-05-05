@@ -17,7 +17,8 @@ class _LoginPageState extends State<LoginAdmin> {
   bool isPasswordHidden = true;
 
   Future login() async {
-    var url = Uri.parse("http://localhost/flutter_booking_66710991/php_api/login_admin.php");
+    var url = Uri.parse(
+        "http://localhost/flutter_booking_66710991/php_api/login_admin.php");
 
     var response = await http.post(
       url,
@@ -52,47 +53,64 @@ class _LoginPageState extends State<LoginAdmin> {
         child: Column(
           children: [
 
-            /// 🔥 Header (ดูแพง)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(20, 60, 20, 40),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color(0xFFFF6F91),
-                    Color(0xFFFFA6C1),
-                  ],
-                ),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(40),
-                  bottomRight: Radius.circular(40),
-                ),
-              ),
-              child: const Column(
-                children: [
-                  Icon(Icons.admin_panel_settings,
-                      size: 80, color: Colors.white),
-                  SizedBox(height: 10),
-                  Text(
-                    "Admin Login",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
+            /// 🔥 Header + ปุ่มย้อนกลับ
+            Stack(
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(20, 60, 20, 40),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xFFFF6F91),
+                        Color(0xFFFFA6C1),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(40),
+                      bottomRight: Radius.circular(40),
                     ),
                   ),
-                  SizedBox(height: 5),
-                  Text(
-                    "เข้าสู่ระบบผู้ดูแล",
-                    style: TextStyle(color: Colors.white70),
+                  child: const Column(
+                    children: [
+                      Icon(Icons.admin_panel_settings,
+                          size: 80, color: Colors.white),
+                      SizedBox(height: 10),
+                      Text(
+                        "Admin Login",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        "เข้าสู่ระบบผู้ดูแล",
+                        style: TextStyle(color: Colors.white70),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+
+                /// ⬅️ ปุ่มย้อนกลับ (ลอย)
+                Positioned(
+                  top: 40,
+                  left: 10,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back,
+                        color: Colors.white, size: 28),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 40),
 
-            /// 🔐 Form (Card)
+            /// 🔐 Form
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Material(
@@ -154,7 +172,7 @@ class _LoginPageState extends State<LoginAdmin> {
 
                       const SizedBox(height: 30),
 
-                      /// 🔘 ปุ่ม Login
+                      /// 🔘 LOGIN BUTTON
                       SizedBox(
                         width: double.infinity,
                         height: 50,

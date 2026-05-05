@@ -5,14 +5,24 @@ import 'package:http/http.dart' as http;
 import 'add_game.dart';
 import 'edit_game_page.dart';
 
-
-
 //////////////////////////////////////////////////////////////
 // ✅ CONFIG
 //////////////////////////////////////////////////////////////
 
 const String baseUrl =
-    "http://127.0.0.1/flutter_booking_66710991/php_api/";
+    "http://localhost/flutter_booking_66710991/php_api/"; 
+// 🔥 ใช้ 10.0.2.2 ถ้าเป็น emulator
+
+//////////////////////////////////////////////////////////////
+// ✅ HELPER (แก้ปัญหา key ไม่ตรง)
+//////////////////////////////////////////////////////////////
+
+String getName(p) => p['NAME'] ?? p['name'] ?? '';
+String getLoca(p) => p['LOCATION'] ?? p['location'] ?? '';
+String getCapacity(p) => p['CAPACITY'] ?? p['capacity'] ?? '';
+String getInfo(p) => p['INFO'] ?? p['info'] ?? '';
+String getImage(p) => p['image'] ?? p['IMAGE'] ?? '';
+
 //////////////////////////////////////////////////////////////
 // ✅ PRODUCT LIST PAGE
 //////////////////////////////////////////////////////////////
@@ -47,10 +57,14 @@ class _AddGamePageState extends State<AddGamePage> {
           await http.get(Uri.parse("${baseUrl}show_datagame.php"));
 
       if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
         setState(() {
-          products = json.decode(response.body);
-          filteredProducts = products;
+          products = data;
+          filteredProducts = data;
         });
+
+        print("DATA: $data"); // 🔥 debug
       }
     } catch (e) {
       debugPrint("Fetch Error: $e");
@@ -64,7 +78,7 @@ class _AddGamePageState extends State<AddGamePage> {
   void filterProducts(String query) {
     setState(() {
       filteredProducts = products.where((product) {
-        final name = product['NAME']?.toLowerCase() ?? '';
+        final name = getName(product).toLowerCase();
         return name.contains(query.toLowerCase());
       }).toList();
     });
@@ -103,7 +117,7 @@ class _AddGamePageState extends State<AddGamePage> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("ยืนยันการลบ"),
-        content: Text("ต้องการลบ ${product['NAME']} ?"),
+        content: Text("ต้องการลบ ${getName(product)} ?"),
         actions: [
           TextButton(
             child: const Text("ยกเลิก"),
@@ -141,110 +155,79 @@ class _AddGamePageState extends State<AddGamePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('จองบอร์ดเกม')),
-
+      backgroundColor: Colors.pink.shade50,
+      appBar: AppBar(
+        title: const Text('แก้ไขบอร์ดเกม '),
+        backgroundColor: Colors.pink,
+      ),
       body: Column(
         children: [
-          //////////////////////////////////////////////////////
-          // 🔍 SEARCH
-          //////////////////////////////////////////////////////
 
+          /// 🔍 SEARCH
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(12.0),
             child: TextField(
               controller: searchController,
-              decoration: const InputDecoration(
-                labelText: 'Search Room',
-                prefixIcon: Icon(Icons.search),
+              decoration: InputDecoration(
+                labelText: 'Search Game',
+                prefixIcon: const Icon(Icons.search, color: Colors.pink),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: BorderSide.none,
+                ),
               ),
               onChanged: filterProducts,
             ),
           ),
 
-          //////////////////////////////////////////////////////
-          // 📦 LIST
-          //////////////////////////////////////////////////////
-
+          /// 📦 LIST
           Expanded(
             child: filteredProducts.isEmpty
                 ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
-                   padding: const EdgeInsets.only(bottom: 80), // ✅ สำคัญมาก
+                    padding: const EdgeInsets.only(bottom: 80),
                     itemCount: filteredProducts.length,
                     itemBuilder: (context, index) {
                       final product = filteredProducts[index];
 
                       String imageUrl =
-                          "${baseUrl}images/${product['image']}";
+                          "${baseUrl}images/${getImage(product)}";
 
                       return Card(
+                        margin: const EdgeInsets.all(8),
                         child: ListTile(
-
-                          //////////////////////////////////////////////////
-                          // 🖼 IMAGE
-                          //////////////////////////////////////////////////
-
-                          leading: SizedBox(
-                            width: 70,
-                            height: 70,
-                            child: Image.network(
-                              imageUrl,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) =>
-                                  const Icon(Icons.image_not_supported),
-                            ),
+                          leading: Image.network(
+                            imageUrl,
+                            width: 60,
+                            errorBuilder: (_, __, ___) =>
+                                const Icon(Icons.image),
                           ),
-
-                          //////////////////////////////////////////////////
-                          // 🏷 NAME
-                          //////////////////////////////////////////////////
-
-                          title: Text(product['NAME'] ?? 'No Name'),
-
-                          //////////////////////////////////////////////////
-                          // 📝 DESC
-                          //////////////////////////////////////////////////
-
-                          subtitle:
-                              Text(product['INFO'] ?? ''),
-
-                          //////////////////////////////////////////////////
-                          // 💰 PRICE
-                          //////////////////////////////////////////////////
-
+                          title: Text(getName(product)),
+                          subtitle: Text(getInfo(product)),
                           trailing: PopupMenuButton<String>(
                             onSelected: (value) {
-                              if (value == 'edit') {
-                                openEdit(product);
-                              } else if (value == 'delete') {
-                                confirmDelete(product);
-                              }
+                              if (value == 'edit') openEdit(product);
+                              if (value == 'delete') confirmDelete(product);
                             },
                             itemBuilder: (_) => const [
                               PopupMenuItem(
-                                value: 'edit',
-                                child: Text('แก้ไข'),
-                              ),
+                                  value: 'edit', child: Text('แก้ไข')),
                               PopupMenuItem(
-                                value: 'delete',
-                                child: Text('ลบ'),
-                              ),
+                                  value: 'delete', child: Text('ลบ')),
                             ],
                           ),
-
-                          //////////////////////////////////////////////////
-                          // 👉 DETAIL
-                          //////////////////////////////////////////////////
-
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    ProductDetail(product: product),
-                              ),
-                            );
-                          },
+  print("CLICK: $product"); // 👈 ใส่ตรงนี้
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => ProductDetail(product: product),
+    ),
+  );
+}
                         ),
                       );
                     },
@@ -253,11 +236,9 @@ class _AddGamePageState extends State<AddGamePage> {
         ],
       ),
 
-      ////////////////////////////////////////////////////////
-      // ➕ ADD BUTTON
-      ////////////////////////////////////////////////////////
-
+      /// ➕ ADD
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.pink,
         child: const Icon(Icons.add),
         onPressed: () {
           Navigator.push(
@@ -273,7 +254,7 @@ class _AddGamePageState extends State<AddGamePage> {
 }
 
 //////////////////////////////////////////////////////////////
-// ✅ PRODUCT DETAIL PAGE
+// ✅ DETAIL PAGE
 //////////////////////////////////////////////////////////////
 
 class ProductDetail extends StatelessWidget {
@@ -284,66 +265,58 @@ class ProductDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String imageUrl =
-        "${baseUrl}images/${product['image']}";
+        "${baseUrl}images/${getImage(product)}";
 
     return Scaffold(
+      backgroundColor: Colors.pink.shade50,
       appBar: AppBar(
-        title: Text(product['NAME'] ?? 'Detail'),
+        title: Text(getName(product)),
+        backgroundColor: Colors.pink,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            //////////////////////////////////////////////////////
-            // 🖼 IMAGE
-            //////////////////////////////////////////////////////
-
+            /// 🖼 IMAGE
             Center(
               child: Image.network(
                 imageUrl,
                 height: 200,
-                fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) =>
-                    const Icon(Icons.image_not_supported, size: 100),
+                    const Icon(Icons.image, size: 100),
               ),
             ),
 
             const SizedBox(height: 20),
 
-            //////////////////////////////////////////////////////
-            // 🏷 NAME
-            //////////////////////////////////////////////////////
-
+            /// 🏷 NAME
             Text(
-              product['NAME'] ?? '',
+              getName(product),
               style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+                  fontSize: 22, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 10),
 
-            //////////////////////////////////////////////////////
-            // 📝 DESC
-            //////////////////////////////////////////////////////
+            /// 📝 INFO
+            Text("รายละเอียด: ${getInfo(product)}"),
 
-            Text(
-             'INFO: ${product['INFO']} ',
-              
-              ),
             const SizedBox(height: 10),
 
-            //////////////////////////////////////////////////////
-            // 💰 PRICE
-            //////////////////////////////////////////////////////
+            /// 👥 CAPACITY
+            Text("เล่นได้มากสุด: ${getCapacity(product)} คน"),
 
-            Text(
-              'เล่นได้มากสุด: ${product['CAPACITY']} คน',
-              style: const TextStyle(fontSize: 18),
-            ),
+                    /// 📝 Location
+           
+
+            const SizedBox(height: 10),
+
+            /// 👥 CAPACITY
+           
+            
+            
           ],
         ),
       ),

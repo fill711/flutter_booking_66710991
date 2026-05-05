@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'dart:io';
 
 const String baseUrl =
-    "http://127.0.0.1/flutter_booking_66710991/php_api/";
+    "http://localhost/flutter_booking_66710991/php_api/";
 
 class EditProductPage extends StatefulWidget {
   final dynamic product;
@@ -141,7 +141,7 @@ class _EditProductPageState extends State<EditProductPage> {
         "${baseUrl}images/${widget.product['image']}";
 
     return Scaffold(
-      appBar: AppBar(title: const Text("แก้ไขห้องประชุม")),
+      appBar: AppBar(title: const Text("แก้ไขห้องสันทนาการ")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
 
